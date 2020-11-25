@@ -13,9 +13,7 @@ object Sudoku : Problem<Boolean> {
 
         fun squares(): List<List<T>> = backing.chunked(SQUARE_SIZE).flatMap { rowGroup ->
             val chuckedRows = rowGroup.map { row -> row.chunked(SQUARE_SIZE) }
-            chuckedRows.first().mapIndexed { index, _ ->
-                chuckedRows.flatMap { chuckedRow -> chuckedRow[index] }
-            }
+            chuckedRows.first().mapIndexed { index, _ -> chuckedRows.flatMap { chuckedRow -> chuckedRow[index] } }
         }
 
         companion object {
@@ -26,8 +24,7 @@ object Sudoku : Problem<Boolean> {
     override fun go(input: String): Boolean {
         val board = input.split("\n").map { it.split(" ").map(String::toInt) }.asBoard()
 
-        return (board.either { it.any { line -> line.isValid() } } &&
-                board.squares().any { square -> square.isValid() })
+        return (board.either { it.any { line -> line.isValid() } } && board.squares().any { it.isValid() })
     }
 
     private fun <T> List<List<T>>.asBoard(): Board<T> = Board(this)
