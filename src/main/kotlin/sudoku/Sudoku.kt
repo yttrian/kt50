@@ -6,10 +6,10 @@ object Sudoku : Problem<Boolean> {
     private const val SUDOKU_SUM = 45
 
     private class Board<T>(private val backing: List<List<T>>) {
-        fun pivot(): Board<T> = backing.mapIndexed { index, _ -> backing.map { it[index] } }.asBoard()
+        val pivot: Board<T> by lazy { backing.mapIndexed { index, _ -> backing.map { it[index] } }.asBoard() }
 
         fun either(predicate: (List<List<T>>) -> Boolean): Boolean =
-            listOf(this.backing, this.pivot().backing).any(predicate)
+            listOf(this.backing, this.pivot.backing).any(predicate)
 
         fun squares(): List<List<T>> = backing.chunked(SQUARE_SIZE).flatMap { rowGroup ->
             val chuckedRows = rowGroup.map { row -> row.chunked(SQUARE_SIZE) }
