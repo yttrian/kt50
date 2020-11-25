@@ -6,6 +6,11 @@ import kotlin.test.Test
 internal class SudokuTest : ResourcedTest {
     @Test
     fun `must pass valid board`() {
-        Sudoku withInput "sudoku-valid.txt"
+        Sudoku passWithInput "sudoku-valid.txt"
+    }
+
+    @Test
+    fun `must fail invalid board`() {
+        Sudoku failWithInput "sudoku-invalid.txt"
     }
 }
