@@ -5,16 +5,17 @@ import Problem
 object Sudoku : Problem<Boolean> {
     private const val SUDOKU_SUM = 45
 
-    private class Board<T>(private val backing: List<List<T>>) {
-        val pivot: Board<T> by lazy { backing.mapIndexed { index, _ -> backing.map { it[index] } }.asBoard() }
+    private class Board<T>(backing: List<List<T>>) : List<List<T>> by backing {
+        val pivot: Board<T> by lazy { this.mapIndexed { index, _ -> this.map { it[index] } }.asBoard() }
 
-        fun either(predicate: (List<List<T>>) -> Boolean): Boolean =
-            listOf(this.backing, this.pivot.backing).any(predicate)
-
-        fun squares(): List<List<T>> = backing.chunked(SQUARE_SIZE).flatMap { rowGroup ->
-            val chuckedRows = rowGroup.map { row -> row.chunked(SQUARE_SIZE) }
-            chuckedRows.first().mapIndexed { index, _ -> chuckedRows.flatMap { chuckedRow -> chuckedRow[index] } }
+        val squares: List<List<T>> by lazy {
+            this.chunked(SQUARE_SIZE).flatMap { rowGroup ->
+                val chuckedRows = rowGroup.map { row -> row.chunked(SQUARE_SIZE) }
+                (0 until SQUARE_SIZE).map { index -> chuckedRows.flatMap { chuckedRow -> chuckedRow[index] } }
+            }
         }
+
+        fun either(predicate: (List<List<T>>) -> Boolean): Boolean = listOf(this, this.pivot).any(predicate)
 
         companion object {
             private const val SQUARE_SIZE = 3
@@ -24,7 +25,7 @@ object Sudoku : Problem<Boolean> {
     override fun go(input: String): Boolean {
         val board = input.split("\n").map { it.split(" ").map(String::toInt) }.asBoard()
 
-        return (board.either { it.any { line -> line.isValid() } } && board.squares().any { it.isValid() })
+        return (board.either { it.any { line -> line.isValid() } } && board.squares.any { it.isValid() })
     }
 
     private fun <T> List<List<T>>.asBoard(): Board<T> = Board(this)
