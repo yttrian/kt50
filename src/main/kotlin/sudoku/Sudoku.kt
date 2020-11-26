@@ -25,7 +25,7 @@ object Sudoku : Problem<Boolean> {
     override fun go(input: String): Boolean {
         val board = input.split("\n").map { it.split(" ").map(String::toInt) }.asBoard()
 
-        return (board.either { it.any { line -> line.isValid() } } && board.squares.any { it.isValid() })
+        return (board.either { it.all { line -> line.isValid() } } && board.squares.all { it.isValid() })
     }
 
     private fun <T> List<List<T>>.asBoard(): Board<T> = Board(this)
